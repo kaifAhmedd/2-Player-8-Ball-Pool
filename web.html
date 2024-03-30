@@ -1,0 +1,188 @@
+<html>
+  <head>
+    <title> 8-Ball Pool Game </title>
+    <style>
+        body{
+            text-align: center;
+            background-color: #964B00
+        }
+    </style>
+  </head>
+  <body>
+    <h1><u>Welcome to Kaif's version of 8-Ball Pool</u></h1>
+    <!--width was 950 and height was 1675-->
+    <canvas id="canvas" width="900" height="1575" onmousemove="trackMouse(event);"></canvas>
+    <!--<div id = "x"> x= </div>-->
+    <!--<div id = "y"> y= </div>-->
+  </body>
+  <!--allows us to use jquery-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js">
+  </script>
+  <script>
+    
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+//ctx.fillRect(0, 0, 850, 1675);
+var table = new Image();
+table.src = "table00.svg";
+
+function drawMap(){
+    //went from 100,125 to 0,0
+    ctx.drawImage(table, 100, 125);
+}
+
+function init(){
+    drawMap();
+}
+
+table.onload = function(){
+    init();
+}
+
+
+// this is where we do stuff for part 1(cue ball line part)
+// here we are making our event listeners to create a line on the click of a mouse. we can drag it to our liking
+let startP = {x: 0, y: 0};
+let lineCoord = {x: 0, y: 0};
+let DrawStart = false;
+let tracker = false;
+
+const clientOffset = (event) => {
+    const {pageX, pageY} = event.touches ? event.touches[0] : event;
+    const x = pageX - canvas.offsetLeft;
+    const y = pageY - canvas.offsetTop;
+
+    return {
+       x,
+       y
+    } 
+}
+
+const drawLine = () => {
+  ctx.lineWidth = 6;
+   ctx.beginPath();
+   ctx.moveTo(cueX, cueY);
+   ctx.lineTo(lineCoord.x, lineCoord.y);
+   ctx.stroke();
+}
+
+const mouseDown = (event) => {
+   startP = clientOffset(event);
+   DrawStart = true;
+   tracker = true;
+   
+}
+
+const mouseMove = (event) => {
+  if(!DrawStart) return;
+  
+  lineCoord = clientOffset(event);
+  clearCanvas();
+  drawMap();
+  drawLine();
+}
+
+const mouseUp = (event) => {
+  DrawStart = false;
+  tracker = false;
+  // we are calculating the velocity and acceleration here!
+  const rect = canvas.getBoundingClientRect()
+  let xPosFinal = event.clientX - rect.left
+  let yPosFinal = event.clientY - rect.top
+
+  //xPosFinal = event.pageX
+  //yPosFinal = event.pageY
+  // we multipky by 10 to get the 10000 mm/s speed but not 100% sure if its 10 that we want to multiply by.
+  //velocityX = (xPosFinal - cueX) * 10
+  //velocityY = (yPosFinal - cueY) * 10
+  let velocityX = xPosFinal - cueX
+  let velocityY = yPosFinal - cueY
+  //const add = (velocityX * velocityX) + (velocityY * velocityY)
+  const hyp = Math.sqrt(velocityX * velocityX + velocityY * velocityY)
+  //console.log(velocityX)
+  const max = 123;
+  let total = 10000 * hyp/max;
+  //console.log(total)
+  if(total > 10000){
+    total = 10000;
+  }
+  //total = (total * 10000) / max;
+  //velocityX = velocityX/hyp
+  //velocityY = velocityY/hyp
+  velocityX = total * (velocityX/hyp)
+  velocityY = total * (velocityY/hyp)
+  //console.log(velocityX)
+  //console.log(velocityY)
+
+  // we send the velocity's we got to POST so that we can use shoot.
+$.ajax({
+  type: "POST",
+  url: "display.html",
+  data: {
+    sb_number:1,
+    sb_x:675,
+    sb_y:675,
+    rb_number:0,
+    rb_x:cueX,
+    rb_y:cueY,
+    rb_dx:velocityX,
+    rb_dy:velocityY
+    //make sure to come back and add the current player here that will also be passed to shoot function.
+  }
+})
+
+  clearCanvas();
+  drawMap();
+}
+
+const clearCanvas = () => {
+   ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+canvas.addEventListener('mousedown', mouseDown);
+canvas.addEventListener('mousemove', mouseMove);
+canvas.addEventListener('mouseup', mouseUp);
+
+canvas.addEventListener('touchstart', mouseDown);
+canvas.addEventListener('touchmove', mouseMove);
+canvas.addEventListener('touchend', mouseUp);
+
+// here we worry about linking the line onto the cue ball
+// need to work on this fetch! we use the
+let cueBall
+let cueX
+let cueY
+let track
+
+fetch("table00.svg")
+  .then(res => res.text())
+  .then(dataSVG =>{
+    const parse = new DOMParser();
+    const svg = parse.parseFromString(dataSVG, 'image/svg+xml');
+
+    for(object of svg.children[0].children){
+      if(object.getAttribute("fill") == "WHITE"){
+        cueBall = object
+        cueX = object.getAttribute("cx")/ 1400 * 700 + 14 + 100
+        cueY  = object.getAttribute("cy")/2750 * 1375 + 14 + 125
+      }
+    }
+  })
+
+// this is to get the y and x positions of the end of out stick so that we can compute velocity and send
+// it to POST.
+  function trackMouse( event )
+  {
+if (tracker)
+{
+$('#valx').remove();
+$('#valy').remove();
+$('<div id="valx">'+event.pageX+'</div>').appendTo("#x");
+$('<div id="valy">'+event.pageY+'</div>').appendTo("#y");
+}
+  }
+
+
+  </script>
+</html>
