@@ -12,10 +12,12 @@ from http.server import HTTPServer, BaseHTTPRequestHandler;
 # used to parse the URL and extract form data for GET requests
 from urllib.parse import urlparse, parse_qsl;
 
+table_id = 0;
 
 # handler for our web-server - handles both GET and POST requests
 class MyHandler( BaseHTTPRequestHandler ):
     def do_GET(self):
+        global table_id
         # parse the URL to get the path and form data
         parsed  = urlparse( self.path );
 
@@ -32,9 +34,34 @@ class MyHandler( BaseHTTPRequestHandler ):
             self.send_header( "Content-length", len( content ) );
             self.end_headers();
 
+            tableSVG = Physics.Table();
+            pos1 = Physics.Coordinate(float(675), float(675));
+            pos2 = Physics.Coordinate(float(645), float(621));
+            pos3 = Physics.Coordinate(float(705), float(620));
+            pos4 = Physics.Coordinate(float(675), float(2025));
+            
+            sb1 = Physics.StillBall(3, pos1)
+            sb2 = Physics.StillBall(2, pos2)
+            sb3 = Physics.StillBall(1, pos3)
+            sb4 = Physics.StillBall(0, pos4)
+            
+            tableSVG+=sb1
+            tableSVG+=sb2
+            tableSVG+=sb3
+            tableSVG+=sb4
+            
+            f = open("table00.svg", "w");
+            string = tableSVG.svg();
+            f.write(string);
+            f.close();
+            
+            db = Physics.Database()
+            table_id = db.writeTable(tableSVG);
+            
             # send it to the broswer
             self.wfile.write( bytes( content, "utf-8" ) );
             fp.close();
+            # added lines 37-59 for doGet
 
         # check if the web-pages matches the list
         elif parsed.path.startswith("/table") and parsed.path.endswith(".svg"):
@@ -61,6 +88,7 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 
     def do_POST(self):
+        global table_id;
         # hanle post request
         # parse the URL to get the path and form data
         parsed  = urlparse( self.path );
@@ -75,6 +103,21 @@ class MyHandler( BaseHTTPRequestHandler ):
                                                    self.headers['Content-Type'],
                                                } 
                                    );
+    
+            velX = form.getvalue('velocityX')
+            velY = form.getvalue('velocityY')
+            
+            tableRes = Physics.Table();
+            dbRes = Physics.Database();
+            
+            tableRes = dbRes.readTable(table_id);
+            
+            gameRes = Physics.Game()
+            # stopped here added lines 106 to 116 for the do post part
+            arraySVG = gameRes.shoot("KaifGame", "Kaif", tableRes, velX, velY)
+            #cueBallX = form.getvalue('cueBall')
+            #cueBallY = form.getvalue('cueY')
+            
             #this deletes all tabe-?.svg files in the servers directory
             i = 0;
             while os.path.exists("table%d.svg" %i):

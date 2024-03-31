@@ -110,8 +110,8 @@ const mouseUp = (event) => {
   //total = (total * 10000) / max;
   //velocityX = velocityX/hyp
   //velocityY = velocityY/hyp
-  velocityX = total * (velocityX/hyp)
-  velocityY = total * (velocityY/hyp)
+  velocityX = total * (-velocityX/hyp)
+  velocityY = total * (-velocityY/hyp)
   //console.log(velocityX)
   //console.log(velocityY)
 
@@ -120,14 +120,18 @@ $.ajax({
   type: "POST",
   url: "display.html",
   data: {
-    sb_number:1,
-    sb_x:675,
-    sb_y:675,
-    rb_number:0,
-    rb_x:cueX,
-    rb_y:cueY,
-    rb_dx:velocityX,
-    rb_dy:velocityY
+    //sb_number:1,
+    //sb_x:675,
+    //sb_y:675,
+    //rb_number:0,
+    //rb_x:cueX,
+    //rb_y:cueY,
+    //rb_dx:velocityX,
+    //rb_dy:velocityY
+    velocityX: velocityX,
+    velocityY: velocityY
+    //cueBallPosX: cueBallPosX,
+    //cueBallPosX: cueBallPosY
     //make sure to come back and add the current player here that will also be passed to shoot function.
   }
 })
@@ -165,7 +169,9 @@ fetch("table00.svg")
       if(object.getAttribute("fill") == "WHITE"){
         cueBall = object
         cueX = object.getAttribute("cx")/ 1400 * 700 + 14 + 100
+        cueBallPosX = object.getAttribute("cx")
         cueY  = object.getAttribute("cy")/2750 * 1375 + 14 + 125
+        cueBallPosY = object.getAttribute("cy")
       }
     }
   })

@@ -600,9 +600,12 @@ class Game:
             for i in range(integers):
                 multiplier = i * FRAME_RATE
                 tableTemp = newTable.roll(multiplier);
+                # added this line right here to add to an array
+                string+=tableTemp.svg();
                 tableTemp.time = startTime + multiplier
                 tableID = Database().writeTable(tableTemp)
                 Database().tableShotInsert(shotID,tableID);
             newTable = table
-        
+        #return the array here so that we can use it to get each svg file for animations.
+        return string;
         Database().close
