@@ -133,9 +133,44 @@ $.ajax({
     //cueBallPosX: cueBallPosX,
     //cueBallPosX: cueBallPosY
     //make sure to come back and add the current player here that will also be passed to shoot function.
+  },
+  success: function(data){
+    console.log(data)
+    let i = 0
+    //let arraySVG = `<svg xmlns="http://www.w3.org/2000/svg" ...`;
+    //let blob = new Blob([arraySVG], {type: 'image/svg+xml'});
+    //let url = URL.createObjectURL(blob);
+    //table = document.createElement('img');
+    //table.src = url
+    let arraySVG = data.split("|")
+    let arraylength = arraySVG.length
+    let id = setInterval(() =>{
+      if(i == arraylength-1){
+        const parse = new DOMParser();
+        const svg = parse.parseFromString(arraySVG[i], 'image/svg+xml');
+        for(object of svg.children[0].children){
+          if(object.getAttribute("fill") == "WHITE"){
+            cueBall = object
+            cueX = object.getAttribute("cx")/ 1400 * 700 + 14 + 100
+            cueBallPosX = object.getAttribute("cx")
+            cueY  = object.getAttribute("cy")/2750 * 1375 + 14 + 125
+            cueBallPosY = object.getAttribute("cy")
+          }
+        }
+        clearInterval(id)
+      }
+      else{
+        let blob = new Blob([arraySVG[i]], {type: 'image/svg+xml'})
+        let url = URL.createObjectURL(blob);
+        table.src = url
+        //table.src = arraySVG[i]
+
+        ctx.drawImage(table, 100, 125);
+        i++;
+      }
+    }, 10)
   }
 })
-
   clearCanvas();
   drawMap();
 }

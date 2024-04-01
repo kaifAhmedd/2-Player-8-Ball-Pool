@@ -571,6 +571,7 @@ class Game:
             raise TypeError("values are not valid!")
     
     def shoot( self, gameName, playerName, table, xvel, yvel ):
+        string = []
         shotID = Database().newShot(gameName, playerName);
         cueBall = table.cueBall()
         xpos = cueBall.obj.still_ball.pos.x
@@ -601,11 +602,11 @@ class Game:
                 multiplier = i * FRAME_RATE
                 tableTemp = newTable.roll(multiplier);
                 # added this line right here to add to an array
-                string+=tableTemp.svg();
+                string.append(tableTemp.svg())
                 tableTemp.time = startTime + multiplier
                 tableID = Database().writeTable(tableTemp)
                 Database().tableShotInsert(shotID,tableID);
             newTable = table
         #return the array here so that we can use it to get each svg file for animations.
+        Database().close()
         return string;
-        Database().close

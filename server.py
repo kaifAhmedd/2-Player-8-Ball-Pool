@@ -35,20 +35,63 @@ class MyHandler( BaseHTTPRequestHandler ):
             self.end_headers();
 
             tableSVG = Physics.Table();
-            pos1 = Physics.Coordinate(float(675), float(675));
-            pos2 = Physics.Coordinate(float(645), float(621));
-            pos3 = Physics.Coordinate(float(705), float(620));
-            pos4 = Physics.Coordinate(float(675), float(2025));
+            pos1 = Physics.Coordinate(float(675), float(2025));
+            pos2 = Physics.Coordinate(float(737), float(455));
+            pos3 = Physics.Coordinate(float(800), float(455));
+            pos4 = Physics.Coordinate(float(677), float(453));
+            pos5 = Physics.Coordinate(float(615), float(455))
+            pos6 = Physics.Coordinate(float(550), float(455))
+            pos7 = Physics.Coordinate(float(585), float(509))
+            pos8 = Physics.Coordinate(float(645), float(508))
+            pos9 = Physics.Coordinate(float(675), float(565))
+            pos10 = Physics.Coordinate(float(707), float(509))
+            pos11 = Physics.Coordinate(float(767), float(511))
+            pos12 = Physics.Coordinate(float(615), float(565))
+            pos13 = Physics.Coordinate(float(733), float(566))
+            pos14 = Physics.Coordinate(float(705), float(622))
+            pos15 = Physics.Coordinate(float(645), float(622))
+            pos16 = Physics.Coordinate(float(675), float(675))
+            # pos2 = Physics.Coordinate(float(675), float(675));
+            # pos3 = Physics.Coordinate(float(645), float(621));
+            # pos4 = Physics.Coordinate(float(705), float(620));
             
-            sb1 = Physics.StillBall(3, pos1)
-            sb2 = Physics.StillBall(2, pos2)
-            sb3 = Physics.StillBall(1, pos3)
-            sb4 = Physics.StillBall(0, pos4)
+            sb1 = Physics.StillBall(0, pos1)
+            sb2 = Physics.StillBall(1, pos2)
+            sb3 = Physics.StillBall(2, pos3)
+            sb4 = Physics.StillBall(3, pos4)
+            sb5 = Physics.StillBall(4, pos5)
+            sb6 = Physics.StillBall(5, pos6)
+            sb7 = Physics.StillBall(6, pos7)
+            sb8 = Physics.StillBall(7, pos8)
+            sb9 = Physics.StillBall(8, pos9)
+            sb10 = Physics.StillBall(9, pos10)
+            sb11 = Physics.StillBall(10, pos11)
+            sb12 = Physics.StillBall(11, pos12)
+            sb13 = Physics.StillBall(12, pos13)
+            sb14 = Physics.StillBall(13, pos14)
+            sb15 = Physics.StillBall(14, pos15)
+            sb16 = Physics.StillBall(13, pos16)
+            # sb2 = Physics.StillBall(3, pos2)
+            # sb3 = Physics.StillBall(2, pos3)
+            # sb4 = Physics.StillBall(1, pos4)
             
             tableSVG+=sb1
             tableSVG+=sb2
             tableSVG+=sb3
             tableSVG+=sb4
+            # adding more here
+            tableSVG+=sb5
+            tableSVG+=sb6
+            tableSVG+=sb7
+            tableSVG+=sb8
+            tableSVG+=sb9
+            tableSVG+=sb10
+            tableSVG+=sb11
+            tableSVG+=sb12
+            tableSVG+=sb13
+            tableSVG+=sb14
+            tableSVG+=sb15
+            tableSVG+=sb16
             
             f = open("table00.svg", "w");
             string = tableSVG.svg();
@@ -56,6 +99,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             f.close();
             
             db = Physics.Database()
+            #db.createDB();
             table_id = db.writeTable(tableSVG);
             
             # send it to the broswer
@@ -107,88 +151,91 @@ class MyHandler( BaseHTTPRequestHandler ):
             velX = form.getvalue('velocityX')
             velY = form.getvalue('velocityY')
             
+            vel = Physics.Coordinate(float(velX), float(velY));
+            
             tableRes = Physics.Table();
             dbRes = Physics.Database();
             
             tableRes = dbRes.readTable(table_id);
             
-            gameRes = Physics.Game()
+            gameRes = Physics.Game(gameName = "KaifGame", player1Name= "Kaif", player2Name= "Bob")
             # stopped here added lines 106 to 116 for the do post part
-            arraySVG = gameRes.shoot("KaifGame", "Kaif", tableRes, velX, velY)
+            arraySVG = gameRes.shoot("KaifGame", "Kaif", tableRes, vel.x, vel.y)
+            stringSVG = "|".join(arraySVG);
             #cueBallX = form.getvalue('cueBall')
             #cueBallY = form.getvalue('cueY')
             
             #this deletes all tabe-?.svg files in the servers directory
-            i = 0;
-            while os.path.exists("table%d.svg" %i):
-                os.remove("table%d.svg" %i);
-                i+=1
+            # i = 0;
+            # while os.path.exists("table%d.svg" %i):
+            #     os.remove("table%d.svg" %i);
+            #     i+=1
             
-            #this computes the acceleration on the rolling ball
-            vel = Physics.Coordinate(float(form["rb_dx"].value), float(form["rb_dy"].value));
-            acc = Physics.Coordinate(0.0,0.0);
+            # #this computes the acceleration on the rolling ball
+            # vel = Physics.Coordinate(float(form["rb_dx"].value), float(form["rb_dy"].value));
+            # acc = Physics.Coordinate(0.0,0.0);
             
-            speed = Physics.phylib.phylib_length(vel);
+            # speed = Physics.phylib.phylib_length(vel);
             
-            if(speed > Physics.VEL_EPSILON):
-                acc.x = -vel.x/speed * Physics.DRAG;
-                acc.y = -vel.y/speed * Physics.DRAG;
+            # if(speed > Physics.VEL_EPSILON):
+            #     acc.x = -vel.x/speed * Physics.DRAG;
+            #     acc.y = -vel.y/speed * Physics.DRAG;
             
-            # This constructs a table and adds the balls
-            table = Physics.Table()
+            # # This constructs a table and adds the balls
+            # table = Physics.Table()
 
-            pos = Physics.Coordinate(float(form["sb_x"].value), float(form["sb_y"].value));
-            posr = Physics.Coordinate(float(form["rb_x"].value), float(form["rb_y"].value));
+            # pos = Physics.Coordinate(float(form["sb_x"].value), float(form["sb_y"].value));
+            # posr = Physics.Coordinate(float(form["rb_x"].value), float(form["rb_y"].value));
 
-            sb = Physics.StillBall(1, pos)
+            # sb = Physics.StillBall(1, pos)
 
-            rb = Physics.RollingBall(0, posr, vel, acc)
+            # rb = Physics.RollingBall(0, posr, vel, acc)
 
-            table += sb
+            # table += sb
 
-            table += rb
+            # table += rb
 
-            #this saves the table-?.svg files to the same directory as the server
-            i = 0;
-            while table:
-                f = open("table%d.svg" %(i), "w");
-                string = table.svg();
-                f.write(string);
-                f.close();
-                i+=1;
-                table = table.segment()
+            # #this saves the table-?.svg files to the same directory as the server
+            # i = 0;
+            # while table:
+            #     f = open("table%d.svg" %(i), "w");
+            #     string = table.svg();
+            #     f.write(string);
+            #     f.close();
+            #     i+=1;
+            #     table = table.segment()
 
-            # our "nice" HTML page
-            string = """
-            <html>
-                <head>
-                    <title> shoot</title>
-                </head>
-                <body>
-                <a href = "/shoot.html">Back</a>
-            """
-            string += "<p> Still Ball: position=(%.2f,%.2f) veocity=(0.0,0.0) acceleration=(0.0,0.0)</p>" %(sb.obj.still_ball.pos.x, sb.obj.still_ball.pos.y) 
-            string += "<p> Rolling Ball: position=(%.2f,%.2f) velocity=(%.2f,%.2f) acceleration=(%.2f,%.2f) </p>" %(rb.obj.rolling_ball.pos.x, rb.obj.rolling_ball.pos.y, rb.obj.rolling_ball.vel.x, rb.obj.rolling_ball.vel.y, rb.obj.rolling_ball.acc.x, rb.obj.rolling_ball.acc.y)
+            # # our "nice" HTML page
+            # string = """
+            # <html>
+            #     <head>
+            #         <title> shoot</title>
+            #     </head>
+            #     <body>
+            #     <a href = "/shoot.html">Back</a>
+            # """
+            # string += "<p> Still Ball: position=(%.2f,%.2f) veocity=(0.0,0.0) acceleration=(0.0,0.0)</p>" %(sb.obj.still_ball.pos.x, sb.obj.still_ball.pos.y) 
+            # string += "<p> Rolling Ball: position=(%.2f,%.2f) velocity=(%.2f,%.2f) acceleration=(%.2f,%.2f) </p>" %(rb.obj.rolling_ball.pos.x, rb.obj.rolling_ball.pos.y, rb.obj.rolling_ball.vel.x, rb.obj.rolling_ball.vel.y, rb.obj.rolling_ball.acc.x, rb.obj.rolling_ball.acc.y)
             
-            j=0
-            for j in range(i):
-                string+="""<img src="/table%d.svg">""" %(j)
-                j+=1
+            # j=0
+            # for j in range(i):
+            #     string+="""<img src="/table%d.svg">""" %(j)
+            #     j+=1
             
-            string+= """</body>
-                    </html>
-            """
-            content = string  
+            # string+= """</body>
+            #         </html>
+            # """
+            # content = string  
 
             # generate the headers
             self.send_response( 200 ); # OK
-            self.send_header( "Content-type", "text/html" );
-            self.send_header( "Content-length", len( content ) );
+            self.send_header( "Content-type", "text/plain" );
+            self.send_header( "Content-length", len( stringSVG ) );
             self.end_headers();
 
             # send it to the browser
-            self.wfile.write( bytes( content, "utf-8" ) );
-            fp.close();
+            self.wfile.write( bytes( stringSVG, "utf-8" ) );
+            #fp.close();
 
         else:
             # generate 404 for POST requests that aren't the file above
